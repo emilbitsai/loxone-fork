@@ -1,0 +1,57 @@
+version: "3"
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    pull_policy: always
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - caddy-storage:/data
+    networks:
+      - loxone
+    ports:
+      - '80:80'
+      - '443:443'
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus
+    pull_policy: always
+    volumes:
+      - $PWD/prometheus:/etc/prometheus
+      - prometheus-storage:/prometheus
+    networks:
+      - loxone
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana-oss
+    pull_policy: always
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    networks:
+      - loxone
+    restart: unless-stopped
+
+  loxone-exporter:
+    image: xcid/loxone-prometheus-exporter
+    command: --host demominiserver.loxone.com --port 7778 --user web --password web
+    pull_policy: always
+    networks:
+      - loxone
+    ports:
+      - '8080:8080'
+    restart: unless-stopped
+
+networks:
+  loxone:
+    driver: bridge
+
+volumes:
+  caddy-storage:
+    name: caddy-storage
+  grafana-storage:
+    name: grafana-storage
+  prometheus-storage:
+    name: prometheus-storage
+
