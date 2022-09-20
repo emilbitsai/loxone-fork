@@ -43,6 +43,16 @@ services:
       - '8080:8080'
     restart: unless-stopped
 
+  loxone-exporter-kamil:
+    image: xcid/loxone-prometheus-exporter
+    command: --host 666.666.666.666 --port 7778 --user kamil --password kamil
+    pull_policy: always
+    networks:
+      - loxone
+    ports:
+      - '8080:8080'
+    restart: unless-stopped
+
 networks:
   loxone:
     driver: bridge
